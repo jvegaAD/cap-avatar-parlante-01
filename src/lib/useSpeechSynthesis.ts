@@ -99,6 +99,7 @@ const useSpeechSynthesis = ({
     };
 
     speechUtterance.onerror = (event) => {
+      console.error("Speech synthesis error:", event);
       setIsSpeaking(false);
       if (onErrorRef.current) onErrorRef.current(event);
     };
@@ -115,6 +116,15 @@ const useSpeechSynthesis = ({
 
     // Cancel any ongoing speech
     window.speechSynthesis.cancel();
+
+    console.log("Starting speech synthesis:", {
+      text: utterance.text,
+      rate: utterance.rate,
+      pitch: utterance.pitch,
+      volume: utterance.volume,
+      lang: utterance.lang,
+      voice: utterance.voice?.name
+    });
 
     // Start speaking
     window.speechSynthesis.speak(utterance);

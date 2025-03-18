@@ -17,6 +17,9 @@ const Index = () => {
 
   const { speak, pause, cancel, isSpeaking, voiceSupported } = useSpeechSynthesis({
     text: speechTexts.join(' '),
+    rate: 1.0,
+    pitch: 1.0,
+    volume: 1.0,
     onEnd: () => {
       setIsPlaying(false);
     }
@@ -53,8 +56,8 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // GitHub path (make sure it's accessible)
-  const videoAvatarPath = "/lovable-uploads/Avatar 2- mujer.mp4";
+  // Correct video path with proper URL format
+  const videoAvatarPath = "/lovable-uploads/Avatar%202-%20mujer.mp4";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
@@ -75,7 +78,7 @@ const Index = () => {
             <VideoAvatar 
               videoSrc={videoAvatarPath}
               isSpeaking={isPlaying && !isMuted}
-              className="border-4 border-white shadow-2xl"
+              className="border-4 border-white shadow-2xl h-[500px]"
             />
           </div>
 

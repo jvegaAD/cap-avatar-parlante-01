@@ -17,7 +17,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
-  // Clean up URL - remove spaces in file path which can cause loading issues
+  // Fix video path - ensure spaces are correctly encoded and path is valid
   const cleanVideoSrc = videoSrc.replace(/ /g, '%20');
   
   // Handle video loading
@@ -60,6 +60,8 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
     
     if (isSpeaking) {
       console.log("Playing video");
+      // Unmute the video to ensure audio plays
+      video.muted = false;
       const playPromise = video.play();
       
       if (playPromise !== undefined) {
@@ -96,7 +98,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         className={cn(
           "relative overflow-hidden rounded-3xl",
           "transition-all duration-700 ease-out",
-          "shadow-xl aspect-video", 
+          "shadow-xl", 
           !isLoaded && "animate-pulse bg-gray-200",
           className
         )}
@@ -109,9 +111,8 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         <video 
           ref={videoRef}
           src={cleanVideoSrc}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           loop
-          muted
           playsInline
           preload="auto"
         />
