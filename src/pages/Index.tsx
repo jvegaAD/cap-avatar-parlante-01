@@ -3,78 +3,34 @@ import React, { useState, useEffect } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
-import useSpeechSynthesis from '@/lib/useSpeechSynthesis';
 
 const Index = () => {
   const [isPlaying, setIsPlaying] = useState(true); 
   const [isMuted, setIsMuted] = useState(false);
-
-  const speechTexts = [
-    "La Carpeta de Producción CAP no es solo un documento, es nuestra herramienta de éxito. Nos permite trabajar con orden, precisión y seguridad, reduciendo pérdidas, optimizando procesos y garantizando excelencia. Pero para que funcione, debemos evaluarnos constantemente.",
-    "Aquí entra nuestra lista de chequeo. No es solo un control, es un espejo de nuestras fortalezas y áreas de mejora. Es el vehículo que nos hará avanzar con firmeza, asegurando que cada cuadrilla siga los estándares, mantenga la calidad y mejore continuamente.",
-    "Te invitamos a participar y colaborar en la mejora continua de nuestra empresa."
-  ];
-
-  const { speak, pause, cancel, isSpeaking, voiceSupported } = useSpeechSynthesis({
-    text: speechTexts.join(' '),
-    rate: 1.0,
-    pitch: 1.0,
-    volume: 1.0,
-    onEnd: () => {
-      setIsPlaying(false);
-    }
-  });
   
-  // Effect to handle initial playback and mute state
+  // Effect to handle initial playback
   useEffect(() => {
-    if (isPlaying && !isMuted) {
-      // Small timeout to ensure everything is loaded properly
-      const timer = setTimeout(() => {
-        speak();
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    } else if (isPlaying && isMuted) {
-      // Just continue video playback but pause speech
-      pause();
-    } else {
-      // Video is paused
-      pause();
-    }
-  }, [isPlaying, isMuted, speak, pause]);
+    // Initial setup only needed for video, no speech synthesis
+    console.log("Initial video setup with isPlaying:", isPlaying, "isMuted:", isMuted);
+  }, []);
 
   const handlePlayPause = () => {
-    // Only toggle play/pause state without restarting
     setIsPlaying(!isPlaying);
   };
 
   const handleReset = () => {
     // Reset everything
     setIsPlaying(false);
-    cancel();
     
     // Start over after a short delay
     setTimeout(() => {
       setIsPlaying(true);
-      if (!isMuted) {
-        speak();
-      }
     }, 100);
   };
 
   const toggleMute = () => {
-    // Only toggle mute state without affecting playback
+    // Only toggle mute state
     setIsMuted(!isMuted);
-    
-    if (isPlaying) {
-      if (!isMuted) {
-        // Muting, so pause speech
-        pause();
-      } else {
-        // Unmuting, so resume speech
-        speak();
-      }
-    }
   };
 
   // Fix the video path (using the correct public path)

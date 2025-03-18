@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -55,6 +54,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
     
     if (isSpeaking) {
       console.log("Playing video");
+      // Keep the video's original audio
       video.muted = false;
       const playPromise = video.play();
       
