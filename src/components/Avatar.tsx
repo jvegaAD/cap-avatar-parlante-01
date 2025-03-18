@@ -46,10 +46,7 @@ const Avatar: React.FC<AvatarProps> = ({
           <img 
             src={imageSrc} 
             alt={alt} 
-            className={cn(
-              "w-full h-full object-cover",
-              "transition-transform duration-500"
-            )}
+            className="w-full h-full object-cover transition-transform duration-500"
           />
         )}
         <div 
@@ -69,7 +66,6 @@ const Avatar: React.FC<AvatarProps> = ({
           {[1, 2, 3].map((i) => (
             <div 
               key={i}
-              className="w-[3px] bg-primary rounded-full"
               style={{
                 height: `${Math.max(30, Math.random() * 100)}%`,
                 animationDuration: `${0.6 + Math.random() * 0.4}s`,

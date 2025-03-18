@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Avatar from '../components/Avatar';
+import VideoAvatar from '../components/VideoAvatar';
 import SpeechBubble from '../components/SpeechBubble';
 import TextAnimation from '../components/TextAnimation';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ const Index = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [activeTextIndex, setActiveTextIndex] = useState<number | null>(null);
+  const [useVideoAvatar, setUseVideoAvatar] = useState(true);
 
   const speechTexts = [
     "La Carpeta de Producción CAP no es solo un documento, es nuestra herramienta de éxito. Nos permite trabajar con orden, precisión y seguridad, reduciendo pérdidas, optimizando procesos y garantizando excelencia. Pero para que funcione, debemos evaluarnos constantemente.",
@@ -66,6 +68,13 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
+  const toggleAvatarType = () => {
+    setUseVideoAvatar(!useVideoAvatar);
+  };
+
+  // Ruta al video del avatar preconfigurado
+  const videoAvatarPath = "/lovable-uploads/Avatar-2-mujer.mp4";
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
       <div className="w-full max-w-5xl mx-auto">
@@ -84,17 +93,25 @@ const Index = () => {
 
         {/* Avatar Section */}
         <div className="flex flex-col items-center mb-10">
-          <div className="mb-8 w-48 h-48 md:w-64 md:h-64 animate-appear">
-            <Avatar 
-              imageSrc="/lovable-uploads/2b580597-86e4-4fdc-bef3-07775ae52a13.png"
-              alt="Avatar Profesional"
-              isSpeaking={isPlaying && !isMuted && isSpeaking}
-              className="border-4 border-white shadow-2xl"
-            />
+          <div className="mb-8 w-64 h-64 md:w-80 md:h-80 animate-appear">
+            {useVideoAvatar ? (
+              <VideoAvatar 
+                videoSrc={videoAvatarPath}
+                isSpeaking={isPlaying && !isMuted && isSpeaking}
+                className="border-4 border-white shadow-2xl"
+              />
+            ) : (
+              <Avatar 
+                imageSrc="/lovable-uploads/2b580597-86e4-4fdc-bef3-07775ae52a13.png"
+                alt="Avatar Profesional"
+                isSpeaking={isPlaying && !isMuted && isSpeaking}
+                className="border-4 border-white shadow-2xl"
+              />
+            )}
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-3 mb-8 animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <div className="flex items-center gap-3 mb-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
             <Button 
               variant="outline" 
               size="icon" 
@@ -127,6 +144,16 @@ const Index = () => {
               )}
             </Button>
           </div>
+
+          {/* Toggle Avatar Type Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleAvatarType}
+            className="mb-6 bg-white/80 backdrop-blur-sm"
+          >
+            {useVideoAvatar ? "Usar Avatar Estático" : "Usar Avatar Video"}
+          </Button>
 
           {/* Speech Bubbles */}
           <div className="space-y-6 w-full animate-fade-in" style={{ animationDelay: '600ms' }}>

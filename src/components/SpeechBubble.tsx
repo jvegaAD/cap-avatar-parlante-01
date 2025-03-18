@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 interface SpeechBubbleProps {
-  text: string;
+  text: React.ReactNode;
   className?: string;
   isVisible: boolean;
   currentTextIndex: number;
@@ -38,9 +38,9 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
         className
       )}
     >
-      <p className="text-lg md:text-xl leading-relaxed text-gray-800 font-medium">
+      <div className="text-lg md:text-xl leading-relaxed text-gray-800 font-medium">
         {text}
-      </p>
+      </div>
     </div>
   );
 };
