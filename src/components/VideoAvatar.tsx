@@ -16,9 +16,6 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
-
-  // Fix video path - ensure spaces are correctly encoded and path is valid
-  const cleanVideoSrc = videoSrc.replace(/ /g, '%20');
   
   // Handle video loading
   useEffect(() => {
@@ -40,17 +37,15 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       video.addEventListener('loadeddata', handleLoaded);
       video.addEventListener('error', handleError);
       
-      // Force reload the video if there was an error
-      if (loadError) {
-        video.load();
-      }
+      // Try to load the video
+      video.load();
       
       return () => {
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
       };
     }
-  }, [loadError, cleanVideoSrc]);
+  }, [videoSrc]);
 
   // Handle video playback based on speaking state
   useEffect(() => {
@@ -77,7 +72,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
   }, [isSpeaking, isLoaded]);
 
   if (loadError) {
-    console.error(`Could not load video from: ${cleanVideoSrc}`);
+    console.error(`Could not load video from: ${videoSrc}`);
   }
 
   return (
@@ -103,7 +98,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       >
         <video 
           ref={videoRef}
-          src={cleanVideoSrc}
+          src={videoSrc}
           className="w-full h-full object-contain"
           playsInline
           preload="auto"

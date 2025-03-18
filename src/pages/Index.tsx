@@ -6,7 +6,7 @@ import { Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import useSpeechSynthesis from '@/lib/useSpeechSynthesis';
 
 const Index = () => {
-  const [isPlaying, setIsPlaying] = useState(true); // Set initial state to true
+  const [isPlaying, setIsPlaying] = useState(true); 
   const [isMuted, setIsMuted] = useState(false);
 
   const speechTexts = [
@@ -77,8 +77,8 @@ const Index = () => {
     }
   };
 
-  // Correct video path with proper URL format
-  const videoAvatarPath = "/lovable-uploads/Avatar%202-%20mujer.mp4";
+  // Fix the video path (using the correct public path)
+  const videoAvatarPath = "./lovable-uploads/Avatar 2- mujer.mp4";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
