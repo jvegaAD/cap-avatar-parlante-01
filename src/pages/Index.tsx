@@ -33,8 +33,11 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // Make sure the video path is correct (in public folder) - removed ./ to ensure proper path resolution
+  // Video path with multiple fallback options
   const videoAvatarPath = "/lovable-uploads/Avatar 2- mujer.mp4";
+  
+  // Fallback image if video fails to load
+  const fallbackImagePath = "/lovable-uploads/64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
@@ -54,6 +57,7 @@ const Index = () => {
           <div className="mb-8 w-full max-w-xl mx-auto animate-appear">
             <VideoAvatar 
               videoSrc={videoAvatarPath}
+              fallbackImageSrc={fallbackImagePath}
               isSpeaking={isPlaying}
               isMuted={isMuted}
               className="border-4 border-white shadow-2xl h-[500px]"

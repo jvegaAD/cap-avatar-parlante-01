@@ -1,8 +1,10 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface VideoAvatarProps {
   videoSrc: string;
+  fallbackImageSrc?: string;
   isSpeaking: boolean;
   isMuted: boolean;
   className?: string;
@@ -10,6 +12,7 @@ interface VideoAvatarProps {
 
 const VideoAvatar: React.FC<VideoAvatarProps> = ({ 
   videoSrc, 
+  fallbackImageSrc,
   isSpeaking,
   isMuted,
   className 
@@ -38,9 +41,20 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       video.addEventListener('loadeddata', handleLoaded);
       video.addEventListener('error', handleError);
 
-      // Force load the video
-      video.src = videoSrc;
-      video.load();
+      // Clear any previous source and errors
+      video.pause();
+      
+      // Force load the video with absolute path
+      const absoluteVideoPath = videoSrc.startsWith('/') ? videoSrc : `/${videoSrc}`;
+      video.src = absoluteVideoPath;
+      
+      // Explicitly try to load the video
+      try {
+        video.load();
+      } catch (err) {
+        console.error("Error during video load():", err);
+        setLoadError(true);
+      }
       
       return () => {
         video.removeEventListener('loadeddata', handleLoaded);
@@ -51,9 +65,12 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
 
   // Handle video playback based on speaking state
   useEffect(() => {
-    if (!videoRef.current || !isLoaded) return;
+    if (!videoRef.current || (!isLoaded && !loadError)) return;
     
     const video = videoRef.current;
+    
+    // Don't attempt playback if there was a load error
+    if (loadError) return;
     
     // Apply mute state separately from playback
     video.muted = isMuted;
@@ -66,6 +83,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       if (playPromise !== undefined) {
         playPromise.catch(error => {
           console.error("Error playing video:", error);
+          setLoadError(true);
         });
       }
     } else {
@@ -74,26 +92,41 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         video.pause();
       }
     }
-  }, [isSpeaking, isLoaded, isMuted]);
+  }, [isSpeaking, isLoaded, isMuted, loadError]);
 
   return (
     <div className="video-avatar-container relative">
-      {loadError && (
+      {loadError && fallbackImageSrc && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-3xl overflow-hidden">
+          <img 
+            src={fallbackImageSrc} 
+            alt="Avatar fallback" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute bottom-2 text-sm text-center w-full bg-black/50 text-white py-1">
+            Video could not be loaded
+          </div>
+        </div>
+      )}
+      
+      {loadError && !fallbackImageSrc && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-3xl">
           <p className="text-gray-500">Error loading video</p>
         </div>
       )}
+      
       <div 
         className={cn(
           "relative overflow-hidden rounded-3xl",
           "transition-all duration-700 ease-out",
           "shadow-xl", 
           !isLoaded && "animate-pulse bg-gray-200",
+          loadError && "opacity-0",
           className
         )}
         style={{ 
-          opacity: isLoaded ? 1 : 0,
-          transform: `scale(${isLoaded ? 1 : 0.9})`,
+          opacity: isLoaded && !loadError ? 1 : 0,
+          transform: `scale(${isLoaded && !loadError ? 1 : 0.9})`,
           transition: "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)"
         }}
       >
@@ -102,7 +135,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
           className="w-full h-full object-contain"
           playsInline
           preload="auto"
-          loop={false}
+          loop={true}
         />
         <div 
           className={cn(
