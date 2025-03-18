@@ -61,7 +61,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         className={cn(
           "relative overflow-hidden rounded-3xl", // Changed from rounded-full to rounded-3xl
           "transition-all duration-700 ease-out",
-          "shadow-xl aspect-video", // Changed to aspect-video
+          "shadow-xl aspect-video", // Use aspect-video to maintain proper video ratio
           !isLoaded && "animate-pulse bg-gray-200",
           className
         )}

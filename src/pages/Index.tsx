@@ -1,19 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import Avatar from '../components/Avatar';
 import VideoAvatar from '../components/VideoAvatar';
-import SpeechBubble from '../components/SpeechBubble';
-import TextAnimation from '../components/TextAnimation';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import useSpeechSynthesis from '@/lib/useSpeechSynthesis';
 
 const Index = () => {
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [activeTextIndex, setActiveTextIndex] = useState<number | null>(null);
-  const [useVideoAvatar, setUseVideoAvatar] = useState(true);
 
   const speechTexts = [
     "La Carpeta de Producción CAP no es solo un documento, es nuestra herramienta de éxito. Nos permite trabajar con orden, precisión y seguridad, reduciendo pérdidas, optimizando procesos y garantizando excelencia. Pero para que funcione, debemos evaluarnos constantemente.",
@@ -22,15 +16,9 @@ const Index = () => {
   ];
 
   const { speak, pause, cancel, isSpeaking, voiceSupported } = useSpeechSynthesis({
-    text: speechTexts[currentTextIndex],
+    text: speechTexts.join(' '),
     onEnd: () => {
-      // Move to next text or restart
-      if (currentTextIndex < speechTexts.length - 1) {
-        setCurrentTextIndex(prevIndex => prevIndex + 1);
-      } else {
-        setIsPlaying(false);
-        setActiveTextIndex(null);
-      }
+      setIsPlaying(false);
     }
   });
 
@@ -38,29 +26,17 @@ const Index = () => {
     if (isPlaying && !isMuted) {
       cancel();
       speak();
-      setActiveTextIndex(currentTextIndex);
     } else {
       pause();
     }
-  }, [currentTextIndex, isPlaying, isMuted, speak, pause, cancel]);
+  }, [isPlaying, isMuted, speak, pause, cancel]);
 
   const handlePlayPause = () => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      setActiveTextIndex(null);
-    } else {
-      setIsPlaying(true);
-      // If we completed all texts, start from beginning
-      if (currentTextIndex >= speechTexts.length - 1 && !isSpeaking) {
-        setCurrentTextIndex(0);
-      }
-    }
+    setIsPlaying(!isPlaying);
   };
 
   const handleReset = () => {
     setIsPlaying(false);
-    setCurrentTextIndex(0);
-    setActiveTextIndex(null);
     cancel();
   };
 
@@ -68,11 +44,7 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  const toggleAvatarType = () => {
-    setUseVideoAvatar(!useVideoAvatar);
-  };
-
-  // Correct path to the video avatar file
+  // GitHub path (make sure it's accessible)
   const videoAvatarPath = "/lovable-uploads/Avatar-2-mujer.mp4";
 
   return (
@@ -86,28 +58,16 @@ const Index = () => {
           <h1 className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-3 tracking-tight">
             Herramienta para el Éxito
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Descubre la importancia de nuestra carpeta de producción y cómo nos ayuda a mejorar constantemente.
-          </p>
         </div>
 
         {/* Avatar Section */}
         <div className="flex flex-col items-center mb-10">
-          <div className="mb-8 w-64 h-64 md:w-80 md:h-80 animate-appear">
-            {useVideoAvatar ? (
-              <VideoAvatar 
-                videoSrc={videoAvatarPath}
-                isSpeaking={isPlaying && !isMuted && isSpeaking}
-                className="border-4 border-white shadow-2xl"
-              />
-            ) : (
-              <Avatar 
-                imageSrc="/lovable-uploads/2b580597-86e4-4fdc-bef3-07775ae52a13.png"
-                alt="Avatar Profesional"
-                isSpeaking={isPlaying && !isMuted && isSpeaking}
-                className="border-4 border-white shadow-2xl"
-              />
-            )}
+          <div className="mb-8 w-full max-w-xl mx-auto animate-appear">
+            <VideoAvatar 
+              videoSrc={videoAvatarPath}
+              isSpeaking={isPlaying && !isMuted && isSpeaking}
+              className="border-4 border-white shadow-2xl"
+            />
           </div>
 
           {/* Controls */}
@@ -143,35 +103,6 @@ const Index = () => {
                 <Volume2 className="h-5 w-5" />
               )}
             </Button>
-          </div>
-
-          {/* Toggle Avatar Type Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleAvatarType}
-            className="mb-6 bg-white/80 backdrop-blur-sm"
-          >
-            {useVideoAvatar ? "Usar Avatar Estático" : "Usar Avatar Video"}
-          </Button>
-
-          {/* Speech Bubbles */}
-          <div className="space-y-6 w-full animate-fade-in" style={{ animationDelay: '600ms' }}>
-            {speechTexts.map((text, index) => (
-              <SpeechBubble
-                key={index}
-                text={activeTextIndex === index ? (
-                  <TextAnimation 
-                    text={text} 
-                    isActive={activeTextIndex === index}
-                    speed={30}
-                  />
-                ) : text}
-                isVisible={index <= currentTextIndex}
-                currentTextIndex={currentTextIndex}
-                className={index === currentTextIndex ? "ring-2 ring-primary/20" : ""}
-              />
-            ))}
           </div>
         </div>
 
