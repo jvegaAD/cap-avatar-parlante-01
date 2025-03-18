@@ -4,12 +4,14 @@ import { cn } from '@/lib/utils';
 interface VideoAvatarProps {
   videoSrc: string;
   isSpeaking: boolean;
+  isMuted: boolean;
   className?: string;
 }
 
 const VideoAvatar: React.FC<VideoAvatarProps> = ({ 
   videoSrc, 
-  isSpeaking, 
+  isSpeaking,
+  isMuted,
   className 
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -28,15 +30,16 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       };
       
       const handleError = (e: any) => {
-        console.error("Error loading video:", e);
+        console.error("Error loading video:", e, "Video source:", videoSrc);
         setLoadError(true);
         setIsLoaded(false);
       };
       
       video.addEventListener('loadeddata', handleLoaded);
       video.addEventListener('error', handleError);
-      
-      // Try to load the video
+
+      // Force load the video
+      video.src = videoSrc;
       video.load();
       
       return () => {
@@ -52,10 +55,12 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
     
     const video = videoRef.current;
     
+    // Apply mute state separately from playback
+    video.muted = isMuted;
+    
     if (isSpeaking) {
       console.log("Playing video");
-      // Keep the video's original audio
-      video.muted = false;
+      // Keep the video's original audio, respecting mute state
       const playPromise = video.play();
       
       if (playPromise !== undefined) {
@@ -69,11 +74,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         video.pause();
       }
     }
-  }, [isSpeaking, isLoaded]);
-
-  if (loadError) {
-    console.error(`Could not load video from: ${videoSrc}`);
-  }
+  }, [isSpeaking, isLoaded, isMuted]);
 
   return (
     <div className="video-avatar-container relative">
@@ -98,10 +99,10 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       >
         <video 
           ref={videoRef}
-          src={videoSrc}
           className="w-full h-full object-contain"
           playsInline
           preload="auto"
+          loop={false}
         />
         <div 
           className={cn(

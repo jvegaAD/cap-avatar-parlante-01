@@ -10,7 +10,7 @@ const Index = () => {
   
   // Effect to handle initial playback
   useEffect(() => {
-    // Initial setup only needed for video, no speech synthesis
+    // Initial setup only needed for video
     console.log("Initial video setup with isPlaying:", isPlaying, "isMuted:", isMuted);
   }, []);
 
@@ -33,8 +33,8 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // Fix the video path (using the correct public path)
-  const videoAvatarPath = "./lovable-uploads/Avatar 2- mujer.mp4";
+  // Make sure the video path is correct (in public folder) - removed ./ to ensure proper path resolution
+  const videoAvatarPath = "/lovable-uploads/Avatar 2- mujer.mp4";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
@@ -55,6 +55,7 @@ const Index = () => {
             <VideoAvatar 
               videoSrc={videoAvatarPath}
               isSpeaking={isPlaying}
+              isMuted={isMuted}
               className="border-4 border-white shadow-2xl h-[500px]"
             />
           </div>
