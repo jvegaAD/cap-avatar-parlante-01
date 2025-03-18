@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import useSpeechSynthesis from '@/lib/useSpeechSynthesis';
 
 const Index = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true); // Set initial state to true
   const [isMuted, setIsMuted] = useState(false);
 
   const speechTexts = [
@@ -25,19 +24,18 @@ const Index = () => {
     }
   });
 
-  // Use a ref to track if this is the first render
-  const firstRender = React.useRef(true);
+  // Remove the firstRender ref since we want it to autoplay
   
   useEffect(() => {
-    // Skip the first render to prevent auto-play on page load
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
-    
+    // Start playing immediately when the component mounts
     if (isPlaying && !isMuted) {
-      cancel();
-      speak();
+      // Small timeout to ensure everything is loaded properly
+      const timer = setTimeout(() => {
+        cancel();
+        speak();
+      }, 500);
+      
+      return () => clearTimeout(timer);
     } else {
       pause();
     }
