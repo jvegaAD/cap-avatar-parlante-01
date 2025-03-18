@@ -60,7 +60,6 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
     
     if (isSpeaking) {
       console.log("Playing video");
-      // Unmute the video to ensure audio plays
       video.muted = false;
       const playPromise = video.play();
       
@@ -73,12 +72,6 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       console.log("Pausing video");
       if (!video.paused) {
         video.pause();
-      }
-      // Try to set time to beginning of the video
-      try {
-        video.currentTime = 0;
-      } catch (e) {
-        console.error("Could not set video time:", e);
       }
     }
   }, [isSpeaking, isLoaded]);
@@ -112,7 +105,6 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
           ref={videoRef}
           src={cleanVideoSrc}
           className="w-full h-full object-contain"
-          loop
           playsInline
           preload="auto"
         />

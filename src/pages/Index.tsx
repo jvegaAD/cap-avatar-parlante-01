@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
@@ -23,35 +24,57 @@ const Index = () => {
       setIsPlaying(false);
     }
   });
-
-  // Remove the firstRender ref since we want it to autoplay
   
+  // Effect to handle initial playback and mute state
   useEffect(() => {
-    // Start playing immediately when the component mounts
     if (isPlaying && !isMuted) {
       // Small timeout to ensure everything is loaded properly
       const timer = setTimeout(() => {
-        cancel();
         speak();
       }, 500);
       
       return () => clearTimeout(timer);
+    } else if (isPlaying && isMuted) {
+      // Just continue video playback but pause speech
+      pause();
     } else {
+      // Video is paused
       pause();
     }
-  }, [isPlaying, isMuted, speak, pause, cancel]);
+  }, [isPlaying, isMuted, speak, pause]);
 
   const handlePlayPause = () => {
+    // Only toggle play/pause state without restarting
     setIsPlaying(!isPlaying);
   };
 
   const handleReset = () => {
+    // Reset everything
     setIsPlaying(false);
     cancel();
+    
+    // Start over after a short delay
+    setTimeout(() => {
+      setIsPlaying(true);
+      if (!isMuted) {
+        speak();
+      }
+    }, 100);
   };
 
   const toggleMute = () => {
+    // Only toggle mute state without affecting playback
     setIsMuted(!isMuted);
+    
+    if (isPlaying) {
+      if (!isMuted) {
+        // Muting, so pause speech
+        pause();
+      } else {
+        // Unmuting, so resume speech
+        speak();
+      }
+    }
   };
 
   // Correct video path with proper URL format
@@ -75,7 +98,7 @@ const Index = () => {
           <div className="mb-8 w-full max-w-xl mx-auto animate-appear">
             <VideoAvatar 
               videoSrc={videoAvatarPath}
-              isSpeaking={isPlaying && !isMuted}
+              isSpeaking={isPlaying}
               className="border-4 border-white shadow-2xl h-[500px]"
             />
           </div>
