@@ -33,10 +33,10 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // Video path with multiple fallback options
-  const videoAvatarPath = "/lovable-uploads/Avatar 2- mujer.mp4";
+  // Try multiple video sources for better compatibility
+  const videoAvatarPath = "/lovable-uploads/Avatar%202-%20mujer.mp4";
   
-  // Fallback image if video fails to load
+  // High-quality fallback image
   const fallbackImagePath = "/lovable-uploads/64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
 
   return (

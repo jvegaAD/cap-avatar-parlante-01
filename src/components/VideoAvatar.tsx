@@ -44,24 +44,40 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       // Clear any previous source and errors
       video.pause();
       
-      // Force load the video with absolute path
-      const absoluteVideoPath = videoSrc.startsWith('/') ? videoSrc : `/${videoSrc}`;
-      video.src = absoluteVideoPath;
-      
-      // Explicitly try to load the video
+      // Try multiple source formats to improve compatibility
       try {
+        // Try original path first
+        const sourcePath = videoSrc.startsWith('/') ? videoSrc : `/${videoSrc}`;
+        
+        // Remove any query parameters or fragments that might cause issues
+        const cleanPath = sourcePath.split('?')[0].split('#')[0];
+        
+        video.src = cleanPath;
         video.load();
+        
+        // Add a timeout to detect if video doesn't load
+        const timeoutId = setTimeout(() => {
+          if (!isLoaded && !loadError) {
+            console.warn("Video load timed out, setting error state");
+            setLoadError(true);
+          }
+        }, 5000);
+        
+        return () => {
+          clearTimeout(timeoutId);
+          video.removeEventListener('loadeddata', handleLoaded);
+          video.removeEventListener('error', handleError);
+        };
       } catch (err) {
-        console.error("Error during video load():", err);
+        console.error("Critical error during video setup:", err);
         setLoadError(true);
+        return () => {
+          video.removeEventListener('loadeddata', handleLoaded);
+          video.removeEventListener('error', handleError);
+        };
       }
-      
-      return () => {
-        video.removeEventListener('loadeddata', handleLoaded);
-        video.removeEventListener('error', handleError);
-      };
     }
-  }, [videoSrc]);
+  }, [videoSrc, isLoaded]);
 
   // Handle video playback based on speaking state
   useEffect(() => {
