@@ -16,23 +16,35 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Handle video loading
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.addEventListener('loadeddata', () => {
+      const handleLoaded = () => {
+        console.log("Video loaded successfully");
         setIsLoaded(true);
-      });
+      };
+      
+      videoRef.current.addEventListener('loadeddata', handleLoaded);
+      
+      return () => {
+        if (videoRef.current) {
+          videoRef.current.removeEventListener('loadeddata', handleLoaded);
+        }
+      };
     }
   }, []);
 
+  // Handle video playback based on speaking state
   useEffect(() => {
     if (!videoRef.current) return;
     
     if (isSpeaking) {
+      console.log("Playing video");
       videoRef.current.play().catch(error => {
         console.error("Error playing video:", error);
       });
     } else {
-      // When not speaking, pause at the first frame
+      console.log("Pausing video");
       videoRef.current.pause();
       // Try to set time to beginning of the video
       try {

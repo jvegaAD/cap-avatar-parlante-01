@@ -72,7 +72,7 @@ const Index = () => {
     setUseVideoAvatar(!useVideoAvatar);
   };
 
-  // Ruta al video del avatar preconfigurado
+  // Correct path to the video avatar file
   const videoAvatarPath = "/lovable-uploads/Avatar-2-mujer.mp4";
 
   return (
