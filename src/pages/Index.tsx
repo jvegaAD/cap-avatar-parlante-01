@@ -22,7 +22,16 @@ const Index = () => {
     }
   });
 
+  // Use a ref to track if this is the first render
+  const firstRender = React.useRef(true);
+  
   useEffect(() => {
+    // Skip the first render to prevent auto-play on page load
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    
     if (isPlaying && !isMuted) {
       cancel();
       speak();
@@ -45,7 +54,7 @@ const Index = () => {
   };
 
   // GitHub path (make sure it's accessible)
-  const videoAvatarPath = "/lovable-uploads/Avatar-2-mujer.mp4";
+  const videoAvatarPath = "/lovable-uploads/Avatar 2- mujer.mp4";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
@@ -65,7 +74,7 @@ const Index = () => {
           <div className="mb-8 w-full max-w-xl mx-auto animate-appear">
             <VideoAvatar 
               videoSrc={videoAvatarPath}
-              isSpeaking={isPlaying && !isMuted && isSpeaking}
+              isSpeaking={isPlaying && !isMuted}
               className="border-4 border-white shadow-2xl"
             />
           </div>

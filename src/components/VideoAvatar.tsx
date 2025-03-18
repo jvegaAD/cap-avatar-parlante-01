@@ -15,53 +15,88 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
+  // Clean up URL - remove spaces in file path which can cause loading issues
+  const cleanVideoSrc = videoSrc.replace(/ /g, '%20');
+  
   // Handle video loading
   useEffect(() => {
     if (videoRef.current) {
+      const video = videoRef.current;
+      
       const handleLoaded = () => {
         console.log("Video loaded successfully");
         setIsLoaded(true);
+        setLoadError(false);
       };
       
-      videoRef.current.addEventListener('loadeddata', handleLoaded);
+      const handleError = (e: any) => {
+        console.error("Error loading video:", e);
+        setLoadError(true);
+        setIsLoaded(false);
+      };
+      
+      video.addEventListener('loadeddata', handleLoaded);
+      video.addEventListener('error', handleError);
+      
+      // Force reload the video if there was an error
+      if (loadError) {
+        video.load();
+      }
       
       return () => {
-        if (videoRef.current) {
-          videoRef.current.removeEventListener('loadeddata', handleLoaded);
-        }
+        video.removeEventListener('loadeddata', handleLoaded);
+        video.removeEventListener('error', handleError);
       };
     }
-  }, []);
+  }, [loadError, cleanVideoSrc]);
 
   // Handle video playback based on speaking state
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !isLoaded) return;
+    
+    const video = videoRef.current;
     
     if (isSpeaking) {
       console.log("Playing video");
-      videoRef.current.play().catch(error => {
-        console.error("Error playing video:", error);
-      });
+      const playPromise = video.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Error playing video:", error);
+        });
+      }
     } else {
       console.log("Pausing video");
-      videoRef.current.pause();
+      if (!video.paused) {
+        video.pause();
+      }
       // Try to set time to beginning of the video
       try {
-        videoRef.current.currentTime = 0;
+        video.currentTime = 0;
       } catch (e) {
         console.error("Could not set video time:", e);
       }
     }
-  }, [isSpeaking]);
+  }, [isSpeaking, isLoaded]);
+
+  if (loadError) {
+    console.error(`Could not load video from: ${cleanVideoSrc}`);
+  }
 
   return (
     <div className="video-avatar-container relative">
+      {loadError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-3xl">
+          <p className="text-gray-500">Error loading video</p>
+        </div>
+      )}
       <div 
         className={cn(
-          "relative overflow-hidden rounded-3xl", // Changed from rounded-full to rounded-3xl
+          "relative overflow-hidden rounded-3xl",
           "transition-all duration-700 ease-out",
-          "shadow-xl aspect-video", // Use aspect-video to maintain proper video ratio
+          "shadow-xl aspect-video", 
           !isLoaded && "animate-pulse bg-gray-200",
           className
         )}
@@ -73,7 +108,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       >
         <video 
           ref={videoRef}
-          src={videoSrc}
+          src={cleanVideoSrc}
           className="w-full h-full object-cover"
           loop
           muted

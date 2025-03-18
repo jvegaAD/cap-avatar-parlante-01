@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseSpeechSynthesisOptions {
   text: string;
@@ -29,6 +29,18 @@ const useSpeechSynthesis = ({
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [voiceSupported, setVoiceSupported] = useState(true);
+  
+  // Use refs to prevent dependency updates causing re-renders in useEffect
+  const onStartRef = useRef(onStart);
+  const onEndRef = useRef(onEnd);
+  const onErrorRef = useRef(onError);
+  
+  // Update refs when callbacks change
+  useEffect(() => {
+    onStartRef.current = onStart;
+    onEndRef.current = onEnd;
+    onErrorRef.current = onError;
+  }, [onStart, onEnd, onError]);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -77,18 +89,18 @@ const useSpeechSynthesis = ({
     speechUtterance.onstart = () => {
       setIsSpeaking(true);
       setIsPaused(false);
-      onStart?.();
+      if (onStartRef.current) onStartRef.current();
     };
 
     speechUtterance.onend = () => {
       setIsSpeaking(false);
       setIsPaused(false);
-      onEnd?.();
+      if (onEndRef.current) onEndRef.current();
     };
 
     speechUtterance.onerror = (event) => {
       setIsSpeaking(false);
-      onError?.(event);
+      if (onErrorRef.current) onErrorRef.current(event);
     };
 
     setUtterance(speechUtterance);
@@ -96,7 +108,7 @@ const useSpeechSynthesis = ({
     return () => {
       window.speechSynthesis.cancel();
     };
-  }, [text, voice, rate, pitch, volume, lang, voices, voiceSupported, onStart, onEnd, onError]);
+  }, [text, voice, rate, pitch, volume, lang, voices, voiceSupported]);
 
   const speak = useCallback(() => {
     if (!voiceSupported || !utterance) return;
