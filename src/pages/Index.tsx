@@ -33,11 +33,11 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // Use direct file path without URL encoding
-  const videoAvatarPath = "/lovable-uploads/Avatar 2- mujer.mp4";
+  // Use absolute URL for video source to avoid path resolution issues
+  const videoAvatarPath = "lovable-uploads/Avatar 2- mujer.mp4";
   
   // High-quality fallback image
-  const fallbackImagePath = "/lovable-uploads/64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
+  const fallbackImagePath = "lovable-uploads/64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
