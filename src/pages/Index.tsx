@@ -33,11 +33,11 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // Use absolute URL for video source to avoid path resolution issues
-  const videoAvatarPath = "lovable-uploads/Avatar 2- mujer.mp4";
+  // Usar ruta directa sin codificación de URL
+  const videoAvatarPath = "Avatar 2- mujer.mp4";
   
-  // High-quality fallback image
-  const fallbackImagePath = "lovable-uploads/64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
+  // Imagen de respaldo de alta calidad
+  const fallbackImagePath = "64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">

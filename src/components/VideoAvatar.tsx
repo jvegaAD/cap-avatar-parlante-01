@@ -21,112 +21,115 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
   
-  // Handle video loading
+  // Manejo de carga del video - Enfoque simplificado
   useEffect(() => {
     if (!videoRef.current) return;
     
     const video = videoRef.current;
-    
-    // Clean up previous settings
-    video.pause();
-    video.muted = true; // Initially muted to avoid autoplay restrictions
+    video.muted = true; // Silenciado inicialmente para evitar restricciones de reproducción automática
     
     const handleLoaded = () => {
-      console.log("Video loaded successfully");
+      console.log("Video cargado exitosamente");
       setIsLoaded(true);
       setLoadError(false);
+      
+      // Actualizar el estado de silencio basado en las props
+      video.muted = isMuted;
+      
+      // Si debería estar reproduciendo, iniciarlo
+      if (isSpeaking) {
+        video.play().catch(e => console.error("Error en reproducción inicial:", e));
+      }
     };
     
     const handleError = (e: any) => {
-      console.error("Error loading video:", e);
+      console.error("Error al cargar el video:", e);
       setLoadError(true);
-      setIsLoaded(false);
     };
     
-    // Set up event listeners
+    // Configurar escuchadores de eventos
     video.addEventListener('loadeddata', handleLoaded);
     video.addEventListener('error', handleError);
     
-    // Load the video - ensure we're using the correct path
+    // Construir la ruta completa al archivo
     try {
-      // Clean up the path by removing leading slash if needed
-      const cleanPath = videoSrc.startsWith('/') ? videoSrc.substring(1) : videoSrc;
-      // If path doesn't already have the full URL, prepend the base URL
-      const fullPath = videoSrc.startsWith('http') ? videoSrc : `${window.location.origin}/${cleanPath}`;
+      // Usar una ruta relativa a la carpeta public
+      const basePath = "/lovable-uploads/";
+      // No codificar la URL para evitar problemas con espacios
+      const fullPath = basePath + videoSrc;
       
-      console.log("Attempting to load video from:", fullPath);
+      console.log("Intentando cargar video desde:", fullPath);
       video.src = fullPath;
       video.load();
       
-      // Set a timeout for loading
+      // Establecer un tiempo de espera para la carga
       const timeoutId = setTimeout(() => {
         if (!isLoaded) {
-          console.log("Video loading timed out");
+          console.log("Tiempo de espera de carga de video agotado");
           setLoadError(true);
         }
-      }, 5000); // Increase timeout to 5 seconds
+      }, 3000);
       
       return () => {
         clearTimeout(timeoutId);
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
+        video.pause();
+        video.src = '';
       };
     } catch (err) {
-      console.error("Error setting up video:", err);
+      console.error("Error al configurar video:", err);
       setLoadError(true);
       return () => {
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
       };
     }
-  }, [videoSrc, isLoaded]);
+  }, [videoSrc]);
   
-  // Handle playback and mute state
+  // Manejar reproducción y estado silenciado
   useEffect(() => {
-    if (!videoRef.current || loadError) return;
+    if (!videoRef.current || !isLoaded || loadError) return;
     
     const video = videoRef.current;
     
-    // Apply mute state
+    // Aplicar estado de silencio
     video.muted = isMuted;
     
-    // Handle play/pause
-    if (isSpeaking && isLoaded) {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Error playing video:", error);
-          // If autoplay is blocked, set muted and try again
-          if (error.name === 'NotAllowedError') {
-            video.muted = true;
-            video.play().catch(e => {
-              console.error("Still cannot play video even when muted:", e);
-            });
-          }
-        });
-      }
-    } else if (!isSpeaking && !video.paused) {
+    // Manejar reproducción/pausa
+    if (isSpeaking) {
+      video.play().catch(error => {
+        console.error("Error al reproducir video:", error);
+        // Si la reproducción automática está bloqueada, silenciar e intentar de nuevo
+        if (error.name === 'NotAllowedError') {
+          video.muted = true;
+          video.play().catch(e => console.error("Aún no se puede reproducir el video incluso silenciado:", e));
+        }
+      });
+    } else {
       video.pause();
     }
-  }, [isSpeaking, isLoaded, isMuted, loadError]);
+  }, [isSpeaking, isMuted, isLoaded, loadError]);
   
   return (
     <div className="video-avatar-container relative">
-      {/* Fallback image when video fails to load */}
-      {loadError && fallbackImageSrc && (
+      {/* Imagen de respaldo cuando el video falla al cargar */}
+      {(loadError || !isLoaded) && fallbackImageSrc && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-200 rounded-3xl overflow-hidden">
           <img 
-            src={fallbackImageSrc} 
+            src={"/lovable-uploads/" + fallbackImageSrc} 
             alt="Avatar fallback" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute bottom-2 left-0 right-0 text-sm text-center bg-black/50 text-white py-1">
-            Video could not be loaded
-          </div>
+          {loadError && (
+            <div className="absolute bottom-2 left-0 right-0 text-sm text-center bg-black/50 text-white py-1">
+              El video no pudo ser cargado
+            </div>
+          )}
         </div>
       )}
       
-      {/* Video container */}
+      {/* Contenedor de video */}
       <div 
         className={cn(
           "relative overflow-hidden rounded-3xl",
@@ -151,7 +154,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         />
       </div>
       
-      {/* Audio visualization bars */}
+      {/* Barras de visualización de audio */}
       <div className={cn(
         "absolute bottom-2 left-1/2 -translate-x-1/2 w-16 h-4",
         "transform-gpu transition-all duration-500",
