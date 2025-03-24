@@ -9,6 +9,8 @@ interface VideoAvatarProps {
   isMuted: boolean;
   className?: string;
   onEnded?: () => void;
+  onLoaded?: () => void;
+  onError?: () => void;
   rewindSeconds?: number;
 }
 
@@ -19,6 +21,8 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
   isMuted,
   className,
   onEnded,
+  onLoaded,
+  onError,
   rewindSeconds = 5
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -51,14 +55,20 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
           }
         });
       }
+      
+      // Notificar que el video se ha cargado correctamente
+      if (onLoaded) {
+        onLoaded();
+      }
     };
     
     const handleError = (e: Event) => {
       console.error("Error al cargar el video:", videoSrc, e);
       setLoadError(true);
-      // Notificar al padre que hubo un error de carga
-      if (onEnded) {
-        onEnded();
+      
+      // Notificar que hubo un error de carga
+      if (onError) {
+        onError();
       }
     };
     
@@ -89,6 +99,9 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         if (!isLoaded) {
           console.log("Tiempo de espera de carga de video agotado para:", videoSrc);
           setLoadError(true);
+          if (onError) {
+            onError();
+          }
         }
       }, 8000); // Aumentamos el tiempo de espera a 8 segundos
       
@@ -103,13 +116,16 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
     } catch (err) {
       console.error("Error al configurar video:", videoSrc, err);
       setLoadError(true);
+      if (onError) {
+        onError();
+      }
       return () => {
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
         video.removeEventListener('ended', handleVideoEnded);
       };
     }
-  }, [videoSrc, isLoaded, isMuted, onEnded, isSpeaking]);
+  }, [videoSrc, isLoaded, isMuted, onEnded, onLoaded, onError, isSpeaking]);
   
   // Manejar reproducción y estado silenciado
   useEffect(() => {

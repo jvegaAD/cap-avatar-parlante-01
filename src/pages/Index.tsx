@@ -1,19 +1,20 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
+import VideoAvatarController from '../components/VideoAvatarController';
 import { Button } from '@/components/ui/button';
-import { Rewind, Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 
 const Index = () => {
   const [isPlaying, setIsPlaying] = useState(true); 
   const [isMuted, setIsMuted] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [hasLoadError, setHasLoadError] = useState(false);
   const videoRef = useRef<HTMLDivElement>(null);
   
   // Effect to handle initial playback
   useEffect(() => {
-    // Initial setup only needed for video
     console.log("Initial video setup with isPlaying:", isPlaying, "isMuted:", isMuted);
   }, []);
 
@@ -60,6 +61,21 @@ const Index = () => {
     });
   };
 
+  const handleVideoLoaded = () => {
+    setIsVideoLoaded(true);
+    setHasLoadError(false);
+  };
+
+  const handleVideoError = () => {
+    setHasLoadError(true);
+    setIsPlaying(false);
+    toast({
+      title: "Error de video",
+      description: "No se pudo cargar el video. Usando imagen de respaldo.",
+      variant: "destructive"
+    });
+  };
+
   const toggleMute = () => {
     // Only toggle mute state
     setIsMuted(!isMuted);
@@ -69,7 +85,7 @@ const Index = () => {
     });
   };
 
-  // Corregido: Nombre exacto del archivo como está en la carpeta pública
+  // Nombre exacto del archivo como está en la carpeta pública
   const videoAvatarPath = "Avatar 5 - mujer.mp4";
   
   // Imagen de respaldo de alta calidad
@@ -104,53 +120,22 @@ const Index = () => {
               isSpeaking={isPlaying}
               isMuted={isMuted}
               onEnded={handleVideoEnded}
+              onLoaded={handleVideoLoaded}
+              onError={handleVideoError}
               className="border-4 border-white shadow-2xl h-[500px]"
             />
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-3 mb-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm"
-              onClick={handleRewind}
-              title="Retroceder 5 segundos"
-            >
-              <Rewind className="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm"
-              onClick={handleReset}
-            >
-              <RotateCcw className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              className="rounded-full h-16 w-16 shadow-md hover:shadow-lg transition-all duration-300 bg-primary hover:bg-primary/90"
-              onClick={handlePlayPause}
-            >
-              {isPlaying ? (
-                <Pause className="h-6 w-6" />
-              ) : (
-                <Play className="h-6 w-6 ml-1" />
-              )}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm"
-              onClick={toggleMute}
-            >
-              {isMuted ? (
-                <VolumeX className="h-5 w-5" />
-              ) : (
-                <Volume2 className="h-5 w-5" />
-              )}
-            </Button>
-          </div>
+          <VideoAvatarController
+            videoRef={videoRef}
+            isPlaying={isPlaying}
+            isMuted={isMuted}
+            onPlayPause={handlePlayPause}
+            onReset={handleReset}
+            onRewind={handleRewind}
+            onToggleMute={toggleMute}
+          />
         </div>
 
         {/* Footer */}
