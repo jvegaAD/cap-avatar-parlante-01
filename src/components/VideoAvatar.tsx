@@ -6,6 +6,11 @@ import VideoFallbackImage from './VideoFallbackImage';
 import VideoAudioIndicator from './VideoAudioIndicator';
 import { cn } from '@/lib/utils';
 
+// Define a type for the ref that includes our custom methods
+export interface VideoAvatarRef extends HTMLDivElement {
+  rewindVideo: () => boolean;
+}
+
 interface VideoAvatarProps {
   videoSrc: string;
   fallbackImageSrc?: string;
@@ -18,8 +23,8 @@ interface VideoAvatarProps {
   rewindSeconds?: number;
 }
 
-// Using forwardRef to expose methods to parent components
-const VideoAvatar = forwardRef<HTMLDivElement, VideoAvatarProps>(({ 
+// Using forwardRef with the correct types
+const VideoAvatar = forwardRef<VideoAvatarRef, VideoAvatarProps>(({ 
   videoSrc, 
   fallbackImageSrc,
   isSpeaking,
@@ -46,15 +51,14 @@ const VideoAvatar = forwardRef<HTMLDivElement, VideoAvatarProps>(({
     onError
   });
 
-  // Expose the rewindVideo method to parent components
+  // Fix the useImperativeHandle implementation
   useImperativeHandle(ref, () => {
-    const div = containerRef.current as HTMLDivElement;
-    
-    // Add rewindVideo method to the ref
-    return Object.assign(div || {}, {
+    // This is a workaround to add methods to the HTMLDivElement
+    // We can't actually extend HTMLDivElement, so we use Object.assign
+    return Object.assign(containerRef.current as HTMLDivElement, {
       rewindVideo
-    });
-  }, [rewindVideo]);
+    }) as VideoAvatarRef;
+  }, [containerRef.current, rewindVideo]);
   
   // Prepare path for the fallback image
   const fallbackImgPath = fallbackImageSrc ? `/lovable-uploads/${fallbackImageSrc}` : null;
