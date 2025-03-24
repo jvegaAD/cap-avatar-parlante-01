@@ -42,7 +42,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       }
     };
     
-    const handleError = (e: any) => {
+    const handleError = (e: Event) => {
       console.error("Error al cargar el video:", e);
       setLoadError(true);
     };
@@ -68,7 +68,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
           console.log("Tiempo de espera de carga de video agotado");
           setLoadError(true);
         }
-      }, 3000);
+      }, 5000); // Aumentamos el tiempo de espera a 5 segundos
       
       return () => {
         clearTimeout(timeoutId);
@@ -85,7 +85,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         video.removeEventListener('error', handleError);
       };
     }
-  }, [videoSrc]);
+  }, [videoSrc, isLoaded]);
   
   // Manejar reproducción y estado silenciado
   useEffect(() => {
