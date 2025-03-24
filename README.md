@@ -1,69 +1,119 @@
-# Welcome to your Lovable project
 
-## Project info
+# Carpeta de Producción CAP - Proyecto de Avatares
+
+## Información del Proyecto
 
 **URL**: https://lovable.dev/projects/cb1f49ec-e361-4692-9362-f0f80038c3c5
 
-## How can I edit this code?
+## Estructura de Archivos
 
-There are several ways of editing your application.
+El proyecto tiene la siguiente estructura de archivos principales:
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/cb1f49ec-e361-4692-9362-f0f80038c3c5) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+├── public/                  # Archivos estáticos
+│   └── lovable-uploads/     # Videos e imágenes cargadas
+├── src/
+│   ├── components/          # Componentes reutilizables
+│   │   ├── ui/              # Componentes de UI de shadcn
+│   │   ├── VideoAvatar.tsx  # Componente para reproducir videos
+│   │   ├── SpeechBubble.tsx # Componente para burbujas de texto
+│   │   └── TextAnimation.tsx # Componente para animación de texto
+│   ├── pages/               # Páginas de la aplicación
+│   │   ├── Index.tsx        # Página principal (primer video)
+│   │   ├── SecondVideo.tsx  # Página del segundo video
+│   │   └── NotFound.tsx     # Página 404
+│   ├── lib/                 # Utilidades y funciones
+│   ├── hooks/               # Hooks personalizados
+│   ├── App.tsx              # Componente principal con rutas
+│   └── main.tsx             # Punto de entrada de la aplicación
+└── index.html               # Archivo HTML principal
 ```
 
-**Edit a file directly in GitHub**
+## Tecnologías Utilizadas
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Este proyecto está construido con:
 
-**Use GitHub Codespaces**
+- Vite - Entorno de desarrollo rápido
+- TypeScript - Superset tipado de JavaScript
+- React - Biblioteca para construir interfaces de usuario
+- shadcn-ui - Sistema de componentes UI
+- Tailwind CSS - Framework de CSS utilitario
+- React Router - Enrutamiento para React
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Dependencias Principales
 
-## What technologies are used for this project?
+- React 18.3.1
+- React Router Dom 6.26.2
+- Lucide React 0.462.0 (para iconos)
+- Tailwind CSS y sus plugins
+- Tanstack React Query 5.56.2
+- Recharts 2.12.7 (para gráficos si se necesitan)
 
-This project is built with .
+## Cómo Ejecutar el Proyecto
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Requisitos Previos
 
-## How can I deploy this project?
+- Node.js (recomendado instalar con [nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
+- npm (viene con Node.js)
+- Git
+- Visual Studio Code
 
-Simply open [Lovable](https://lovable.dev/projects/cb1f49ec-e361-4692-9362-f0f80038c3c5) and click on Share -> Publish.
+### Pasos para Ejecutar con Visual Studio Code
 
-## I want to use a custom domain - is that possible?
+1. **Clonar el Repositorio**
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+   ```sh
+   git clone <URL_DEL_REPOSITORIO>
+   cd carpeta-de-produccion-cap
+   ```
+
+2. **Abrir el Proyecto en Visual Studio Code**
+
+   ```sh
+   code .
+   ```
+
+   O abre VS Code y desde el menú "File" selecciona "Open Folder" y navega hasta la carpeta del proyecto.
+
+3. **Instalar Dependencias**
+
+   Abre la terminal integrada en VS Code con `Ctrl+` ó con el menú "Terminal" -> "New Terminal" y ejecuta:
+
+   ```sh
+   npm install
+   ```
+
+4. **Iniciar el Servidor de Desarrollo**
+
+   En la misma terminal, ejecuta:
+
+   ```sh
+   npm run dev
+   ```
+
+   Esto iniciará el servidor de desarrollo y la aplicación estará disponible en `http://localhost:8080`.
+
+5. **Extensiones Recomendadas para VS Code**
+
+   Para una mejor experiencia de desarrollo, puedes instalar estas extensiones en VS Code:
+   
+   - ESLint
+   - Prettier
+   - Tailwind CSS IntelliSense
+   - TypeScript React code snippets
+
+## Funcionalidades Principales
+
+- Reproducción de videos de avatares
+- Controles de reproducción (play/pause, reinicio, silencio)
+- Función de rebobinado (5 segundos)
+- Navegación entre videos
+- Interfaz responsiva
+
+## Cómo Desplegar el Proyecto
+
+Puedes desplegar fácilmente abriendo [Lovable](https://lovable.dev/projects/cb1f49ec-e361-4692-9362-f0f80038c3c5) y haciendo clic en Compartir -> Publicar.
+
+## Licencia
+
+© 2024 Carpeta de Producción CAP. Todos los derechos reservados.
