@@ -5,6 +5,45 @@
 
 **URL**: https://lovable.dev/projects/cb1f49ec-e361-4692-9362-f0f80038c3c5
 
+## Cómo Descargar Solamente requirements.txt
+
+Si solo necesitas el archivo de dependencias (requirements.txt) sin clonar todo el repositorio, puedes seguir estos pasos en Visual Studio Code:
+
+1. **Abre VSCode y la terminal integrada** (Ctrl+` o Terminal -> Nueva Terminal)
+
+2. **Crea una carpeta vacía y posiciónate en ella:**
+   ```bash
+   mkdir cap-requirements
+   cd cap-requirements
+   ```
+
+3. **Inicializa un repositorio git local:**
+   ```bash
+   git init
+   ```
+
+4. **Agrega el repositorio remoto como origen:**
+   ```bash
+   git remote add origin <URL_DEL_REPOSITORIO>
+   ```
+
+5. **Configura git para usar sparse-checkout:**
+   ```bash
+   git config core.sparseCheckout true
+   ```
+
+6. **Especifica que solo quieres el archivo requirements.txt:**
+   ```bash
+   echo "requirements.txt" > .git/info/sparse-checkout
+   ```
+
+7. **Realiza el pull desde el repositorio:**
+   ```bash
+   git pull origin main
+   ```
+
+Después de estos pasos, solo tendrás el archivo requirements.txt en tu carpeta local.
+
 ## Estructura de Archivos
 
 El proyecto tiene la siguiente estructura de archivos principales:
