@@ -8,6 +8,8 @@ interface VideoAvatarProps {
   isSpeaking: boolean;
   isMuted: boolean;
   className?: string;
+  onEnded?: () => void;
+  rewindSeconds?: number;
 }
 
 const VideoAvatar: React.FC<VideoAvatarProps> = ({ 
@@ -15,7 +17,9 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
   fallbackImageSrc,
   isSpeaking,
   isMuted,
-  className 
+  className,
+  onEnded,
+  rewindSeconds = 5
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -47,9 +51,16 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       setLoadError(true);
     };
     
+    const handleVideoEnded = () => {
+      if (onEnded) {
+        onEnded();
+      }
+    };
+    
     // Configurar escuchadores de eventos
     video.addEventListener('loadeddata', handleLoaded);
     video.addEventListener('error', handleError);
+    video.addEventListener('ended', handleVideoEnded);
     
     // Construir la ruta completa al archivo
     try {
@@ -74,6 +85,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
         clearTimeout(timeoutId);
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
+        video.removeEventListener('ended', handleVideoEnded);
         video.pause();
         video.src = '';
       };
@@ -83,9 +95,10 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       return () => {
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
+        video.removeEventListener('ended', handleVideoEnded);
       };
     }
-  }, [videoSrc, isLoaded]);
+  }, [videoSrc, isLoaded, isMuted, onEnded]);
   
   // Manejar reproducción y estado silenciado
   useEffect(() => {
@@ -110,6 +123,22 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
       video.pause();
     }
   }, [isSpeaking, isMuted, isLoaded, loadError]);
+  
+  // Método para rebobinar el video
+  const rewindVideo = () => {
+    if (videoRef.current && isLoaded) {
+      const video = videoRef.current;
+      // Asegurar que no vamos a un tiempo negativo
+      const newTime = Math.max(0, video.currentTime - rewindSeconds);
+      video.currentTime = newTime;
+    }
+  };
+  
+  // Exponemos el método rewindVideo a través de useImperativeHandle si es necesario
+  // Por ahora lo exponemos como una propiedad del videoRef para uso interno
+  if (videoRef.current) {
+    (videoRef.current as any).rewindVideo = rewindVideo;
+  }
   
   return (
     <div className="video-avatar-container relative">
@@ -150,7 +179,7 @@ const VideoAvatar: React.FC<VideoAvatarProps> = ({
           className="w-full h-full object-contain"
           playsInline
           preload="auto"
-          loop={true}
+          loop={false} /* Cambiado a false para que no se repita */
         />
       </div>
       
