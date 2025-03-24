@@ -26,6 +26,7 @@ const VideoCore: React.FC<VideoCoreProps> = ({
   className
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const loadTimeoutRef = useRef<number | null>(null);
 
   // Setup video loading and event listeners
   useEffect(() => {
@@ -36,6 +37,13 @@ const VideoCore: React.FC<VideoCoreProps> = ({
     
     const handleLoaded = () => {
       console.log("Video cargado exitosamente:", videoSrc);
+      
+      // Limpiar cualquier timeout existente
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+        loadTimeoutRef.current = null;
+      }
+      
       onLoaded();
       
       // Actualizar el estado de silencio basado en las props
@@ -56,6 +64,13 @@ const VideoCore: React.FC<VideoCoreProps> = ({
     
     const handleError = (e: Event) => {
       console.error("Error al cargar el video:", videoSrc, e);
+      
+      // Limpiar cualquier timeout existente
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+        loadTimeoutRef.current = null;
+      }
+      
       onError();
     };
     
@@ -79,16 +94,17 @@ const VideoCore: React.FC<VideoCoreProps> = ({
       video.src = fullPath;
       video.load();
       
-      // Establecer un tiempo de espera para la carga
-      const timeoutId = setTimeout(() => {
-        if (!isLoaded) {
-          console.log("Tiempo de espera de carga de video agotado para:", videoSrc);
-          onError();
-        }
-      }, 8000); // Aumentamos el tiempo de espera a 8 segundos
+      // Establecer un tiempo de espera para la carga - aumentado a 15 segundos
+      // Esto da más tiempo para que los videos se carguen en conexiones lentas
+      loadTimeoutRef.current = window.setTimeout(() => {
+        console.log("Tiempo de espera de carga de video agotado para:", videoSrc);
+        onError();
+      }, 15000); // Aumentamos el tiempo de espera a 15 segundos
       
       return () => {
-        clearTimeout(timeoutId);
+        if (loadTimeoutRef.current) {
+          clearTimeout(loadTimeoutRef.current);
+        }
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
         video.removeEventListener('ended', handleVideoEnded);
@@ -99,12 +115,15 @@ const VideoCore: React.FC<VideoCoreProps> = ({
       console.error("Error al configurar video:", videoSrc, err);
       onError();
       return () => {
+        if (loadTimeoutRef.current) {
+          clearTimeout(loadTimeoutRef.current);
+        }
         video.removeEventListener('loadeddata', handleLoaded);
         video.removeEventListener('error', handleError);
         video.removeEventListener('ended', handleVideoEnded);
       };
     }
-  }, [videoSrc, isLoaded, onLoaded, onError, onEnded, isSpeaking, isMuted]);
+  }, [videoSrc, onLoaded, onError, onEnded, isSpeaking, isMuted]);
   
   // Manejar reproducción y estado silenciado
   useEffect(() => {
@@ -129,9 +148,6 @@ const VideoCore: React.FC<VideoCoreProps> = ({
       video.pause();
     }
   }, [isSpeaking, isMuted, isLoaded, loadError]);
-  
-  // Method to expose the video element for external control
-  React.useImperativeHandle(videoRef, () => videoRef.current!, []);
 
   return (
     <div 

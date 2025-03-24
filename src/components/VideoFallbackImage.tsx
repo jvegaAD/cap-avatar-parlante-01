@@ -12,12 +12,20 @@ const VideoFallbackImage: React.FC<VideoFallbackImageProps> = ({
   isError,
   isLoaded
 }) => {
-  if (!imagePath || (!isError && isLoaded)) {
+  // Si no hay imagen de respaldo, no mostramos nada
+  if (!imagePath) {
     return null;
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-200 rounded-3xl overflow-hidden">
+    <div 
+      className="absolute inset-0 z-10 flex items-center justify-center bg-gray-200 rounded-3xl overflow-hidden"
+      style={{ 
+        opacity: (!isLoaded || isError) ? 1 : 0,
+        transition: "opacity 0.6s ease-out",
+        pointerEvents: isLoaded && !isError ? "none" : "auto"
+      }}
+    >
       <img 
         src={imagePath} 
         alt="Avatar fallback" 
