@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
@@ -33,8 +34,8 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // Usar ruta directa sin codificación de URL
-  const videoAvatarPath = "Avatar 2- mujer.mp4";
+  // Changed video to "Avatar 5 - mujer.mp4" as requested
+  const videoAvatarPath = "Avatar 5 - mujer.mp4";
   
   // Imagen de respaldo de alta calidad
   const fallbackImagePath = "64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";

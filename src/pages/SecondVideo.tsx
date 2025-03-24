@@ -53,8 +53,8 @@ const SecondVideo = () => {
     setIsMuted(!isMuted);
   };
 
-  // Usar el video "Avatar 5 - mujer" que ya está en la carpeta lovable-uploads
-  const videoAvatarPath = "Avatar 5 - mujer.mp4";
+  // Changed video to "Avatar 2- mujer.mp4" as requested
+  const videoAvatarPath = "Avatar 2- mujer.mp4";
   
   // Imagen de respaldo de alta calidad (puedes usar la misma u otra)
   const fallbackImagePath = "64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
