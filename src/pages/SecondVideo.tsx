@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Index = () => {
+const SecondVideo = () => {
   const [isPlaying, setIsPlaying] = useState(true); 
   const [isMuted, setIsMuted] = useState(false);
   
@@ -33,28 +34,28 @@ const Index = () => {
     setIsMuted(!isMuted);
   };
 
-  // Usar ruta directa sin codificación de URL
-  const videoAvatarPath = "Avatar 2- mujer.mp4";
+  // Este es un placeholder para el segundo video - deberás reemplazarlo con tu archivo
+  const videoAvatarPath = "TU_NUEVO_VIDEO.mp4";
   
-  // Imagen de respaldo de alta calidad
+  // Imagen de respaldo de alta calidad (puedes usar la misma u otra)
   const fallbackImagePath = "64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-gray-100 flex flex-col justify-center items-center p-4 md:p-8">
       <div className="w-full max-w-5xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="inline-block mb-2 px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium tracking-wide">
-            Carpeta de Producción CAP
+            Video Secundario
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-3 tracking-tight">
-            Herramienta para el Éxito
+            Segunda Presentación
           </h1>
           
           {/* Navegación */}
           <div className="mb-4">
-            <Link to="/segundo-video" className="text-primary hover:underline">
-              Ver segundo video →
+            <Link to="/" className="text-primary hover:underline">
+              ← Volver al primer video
             </Link>
           </div>
         </div>
@@ -116,4 +117,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default SecondVideo;
