@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
-import { Rewind, Play, Pause, RotateCcw, Volume2, VolumeX, FileText } from 'lucide-react';
+import { Rewind, Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 
@@ -86,14 +87,10 @@ const Index = () => {
             Herramienta para el Éxito
           </h1>
           
-          {/* Navegación */}
-          <div className="mb-4 flex gap-4 justify-center">
+          {/* Navegación - Removed requirements.txt link */}
+          <div className="mb-4 flex justify-center">
             <Link to="/segundo-video" className="text-primary hover:underline">
               Ver segundo video →
-            </Link>
-            <Link to="/requirements-info" className="text-primary hover:underline flex items-center gap-1">
-              <FileText className="h-4 w-4" /> 
-              Ver información requirements.txt
             </Link>
           </div>
         </div>
