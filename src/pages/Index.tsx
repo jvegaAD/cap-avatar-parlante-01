@@ -1,13 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { Rewind, Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
   const [isPlaying, setIsPlaying] = useState(true); 
   const [isMuted, setIsMuted] = useState(false);
+  const videoRef = useRef<HTMLDivElement>(null);
   
   // Effect to handle initial playback
   useEffect(() => {
@@ -27,6 +28,23 @@ const Index = () => {
     setTimeout(() => {
       setIsPlaying(true);
     }, 100);
+  };
+
+  const handleRewind = () => {
+    // Rebobinar 5 segundos
+    if (videoRef.current) {
+      const videoElement = videoRef.current.querySelector('video');
+      if (videoElement) {
+        // Retroceder 5 segundos
+        videoElement.currentTime = Math.max(0, videoElement.currentTime - 5);
+      }
+    }
+  };
+
+  const handleVideoEnded = () => {
+    // Cuando el video termina, detenemos la reproducción
+    setIsPlaying(false);
+    console.log("Video ha terminado de reproducirse");
   };
 
   const toggleMute = () => {
@@ -62,18 +80,28 @@ const Index = () => {
 
         {/* Avatar Section */}
         <div className="flex flex-col items-center mb-10">
-          <div className="mb-8 w-full max-w-xl mx-auto animate-appear">
+          <div ref={videoRef} className="mb-8 w-full max-w-xl mx-auto animate-appear">
             <VideoAvatar 
               videoSrc={videoAvatarPath}
               fallbackImageSrc={fallbackImagePath}
               isSpeaking={isPlaying}
               isMuted={isMuted}
+              onEnded={handleVideoEnded}
               className="border-4 border-white shadow-2xl h-[500px]"
             />
           </div>
 
           {/* Controls */}
           <div className="flex items-center gap-3 mb-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm"
+              onClick={handleRewind}
+              title="Retroceder 5 segundos"
+            >
+              <Rewind className="h-5 w-5" />
+            </Button>
             <Button 
               variant="outline" 
               size="icon" 
