@@ -1,11 +1,10 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Rewind, Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
 
 interface VideoAvatarControllerProps {
-  videoRef: React.RefObject<HTMLDivElement>;
+  videoRef: React.RefObject<HTMLDivElement & { rewindVideo?: () => boolean }>;
   isPlaying: boolean;
   isMuted: boolean;
   onPlayPause: () => void;
