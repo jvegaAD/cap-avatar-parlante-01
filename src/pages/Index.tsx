@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
 import { Rewind, Play, Pause, RotateCcw, Volume2, VolumeX, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from '@/components/ui/use-toast';
 
 const Index = () => {
   const [isPlaying, setIsPlaying] = useState(true); 
@@ -27,6 +27,10 @@ const Index = () => {
     // Start over after a short delay
     setTimeout(() => {
       setIsPlaying(true);
+      toast({
+        title: "Video reiniciado",
+        description: "El video se ha reiniciado correctamente",
+      });
     }, 100);
   };
 
@@ -37,6 +41,10 @@ const Index = () => {
       if (videoElement) {
         // Retroceder 5 segundos
         videoElement.currentTime = Math.max(0, videoElement.currentTime - 5);
+        toast({
+          description: "Retrocediendo 5 segundos",
+          duration: 1500,
+        });
       }
     }
   };
@@ -45,14 +53,22 @@ const Index = () => {
     // Cuando el video termina, detenemos la reproducción
     setIsPlaying(false);
     console.log("Video ha terminado de reproducirse");
+    toast({
+      title: "Video completado",
+      description: "El video ha terminado de reproducirse",
+    });
   };
 
   const toggleMute = () => {
     // Only toggle mute state
     setIsMuted(!isMuted);
+    toast({
+      description: isMuted ? "Sonido activado" : "Sonido desactivado",
+      duration: 1500,
+    });
   };
 
-  // Changed video to "Avatar 5 - mujer.mp4" as requested
+  // Corregido: Nombre exacto del archivo como está en la carpeta pública
   const videoAvatarPath = "Avatar 5 - mujer.mp4";
   
   // Imagen de respaldo de alta calidad

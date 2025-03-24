@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import VideoAvatar from '../components/VideoAvatar';
 import { Button } from '@/components/ui/button';
-import { Rewind, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { Rewind, Pause, Play, RotateCcw, Volume2, VolumeX, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from '@/components/ui/use-toast';
 
 const SecondVideo = () => {
   const [isPlaying, setIsPlaying] = useState(true); 
@@ -27,17 +28,24 @@ const SecondVideo = () => {
     // Start over after a short delay
     setTimeout(() => {
       setIsPlaying(true);
+      toast({
+        title: "Video reiniciado",
+        description: "El video se ha reiniciado correctamente",
+      });
     }, 100);
   };
 
   const handleRewind = () => {
     // Rebobinar 5 segundos
-    // Accedemos al método rewindVideo a través del videoRef
     if (videoRef.current) {
       const videoElement = videoRef.current.querySelector('video');
       if (videoElement) {
         // Retroceder 5 segundos
         videoElement.currentTime = Math.max(0, videoElement.currentTime - 5);
+        toast({
+          description: "Retrocediendo 5 segundos",
+          duration: 1500,
+        });
       }
     }
   };
@@ -46,17 +54,25 @@ const SecondVideo = () => {
     // Cuando el video termina, detenemos la reproducción
     setIsPlaying(false);
     console.log("Video ha terminado de reproducirse");
+    toast({
+      title: "Video completado",
+      description: "El video ha terminado de reproducirse",
+    });
   };
 
   const toggleMute = () => {
     // Only toggle mute state
     setIsMuted(!isMuted);
+    toast({
+      description: isMuted ? "Sonido activado" : "Sonido desactivado",
+      duration: 1500,
+    });
   };
 
-  // Changed video to "Avatar 2- mujer.mp4" as requested
+  // Corregido el nombre del archivo tal cual como está en la carpeta pública
   const videoAvatarPath = "Avatar 2- mujer.mp4";
   
-  // Imagen de respaldo de alta calidad (puedes usar la misma u otra)
+  // Imagen de respaldo de alta calidad
   const fallbackImagePath = "64ba5ffc-989d-4cd1-800b-8eee0090e2ce.png";
 
   return (
@@ -73,8 +89,9 @@ const SecondVideo = () => {
           
           {/* Navegación */}
           <div className="mb-4">
-            <Link to="/" className="text-primary hover:underline">
-              ← Volver al primer video
+            <Link to="/" className="text-primary hover:underline flex items-center justify-center gap-1">
+              <ChevronLeft className="h-4 w-4" />
+              Volver al primer video
             </Link>
           </div>
         </div>
@@ -102,6 +119,14 @@ const SecondVideo = () => {
               title="Retroceder 5 segundos"
             >
               <Rewind className="h-5 w-5" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm"
+              onClick={handleReset}
+            >
+              <RotateCcw className="h-5 w-5" />
             </Button>
             <Button 
               size="icon" 
